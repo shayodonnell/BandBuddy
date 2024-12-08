@@ -9,6 +9,18 @@ body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.navbar-brand{
+    margin-left: 5%;
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.btn{
+    min-width: 44px;   
+    min-height: 44px;
+    font-size: calc(0.6em + 0.5vw)
+}
+
 .title{
     margin-top: 5%;
     text-align: center;
@@ -51,7 +63,7 @@ form{
     height: auto;
 }
 
-.btn-new-band {
+.btn-hollow{
     background-color: blue;
     color: white;
     border: 2px solid white;
@@ -66,4 +78,43 @@ form{
 
 .nav-buttons{
     margin: 15px;
+}
+
+.new-band{
+    margin: 2rem auto;
+}
+
+.standard-btn{
+    background-color: blue;
+}
+
+.deadline{
+    color: grey
+}
+
+.feed{
+    max-width: 40%;
+}
+
+.card-interacts{
+    margin-top: 25px;
+}
+
+.post-img{
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.like{
+    color: blue;
+}
+
+.btn-regint{
+    background-color: white;
+    color: blue;
+    border: 2px solid blue;
+}
+.btn-regint:hover{
+    background-color: blue;
+    color: white;
 }

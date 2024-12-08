@@ -1,12 +1,105 @@
 from flask import render_template, flash, request, redirect, session
 from app import app, db, models
-from .forms import SignupForm, SigninForm
 import datetime
+from .forms import SignupForm, SigninForm, EntryForm, PostForm, BandAdForm
 
 @app.route('/', methods=['GET'])
 def feed():
-    bands = models.Band.query.all()
-    return render_template('index.html', bands=bands)
+    bandads = models.BandAd.query.all()
+    bandad_items = [
+        {
+            "type": "bandad",
+            "band_name": models.Band.query.get(bandad.band).name,
+            "lookingfor": bandad.lookingfor,
+            "deadline": bandad.deadline,
+            "formatted_deadline": bandad.deadline.strftime("%d %b"),
+            "date": bandad.date,
+            "id": bandad.id
+        }
+        for bandad in bandads
+    ]
+    posts = models.Post.query.all()
+    post_items = [
+        {
+            "type": "post",
+            "content": post.content,
+            "image": post.image,
+            "author": models.User.query.get(post.author).name,
+            "date": post.date,
+            "id": post.id
+        }
+        for post in posts
+    ]
+    feed_items = sorted(bandad_items + post_items, key = lambda x: x['date'], reverse=True)
+    print(feed_items)
+    return render_template('index.html', feed_items=feed_items, title="Feed")
+
+@app.route('/newad', methods=['GET', 'POST'])
+def newad():
+    if(session['logged_in'] == False):
+        return redirect('/signin')
+    form = BandAdForm()
+    if form.validate_on_submit():
+        newAd = models.BandAd(band=form.band.data, lookingfor=form.lookingfor.data, deadline=form.deadline.data, date=datetime.datetime.now())
+        db.session.add(newAd)
+        db.session.commit()
+        return redirect('/')
+    return render_template('newband.html', form=form, title="New ad")
+
+@app.route('/newpost', methods=['GET', 'POST'])
+def newpost():
+    if(session['logged_in'] == False):
+        return redirect('/signin')
+    form = PostForm()
+    if form.validate_on_submit():
+        newPost = models.Post(content=form.content.data, image=form.image.data, author=session['user_id'], date=datetime.datetime.now())
+        db.session.add(newPost)
+        db.session.commit()
+        return redirect('/')
+    return render_template('newband.html', form=form, title="New post")
+
+@app.route('/newband', methods=['GET', 'POST'])
+def createband():
+    if(session['logged_in'] == False):
+        return redirect('/signin')
+    form = EntryForm()
+    if form.validate_on_submit():
+        newBand = models.Band(name=form.name.data, genre=form.genre.data, description=form.description.data, owner=session['user_id'])
+        db.session.add(newBand)
+        db.session.commit()
+        return redirect('/')
+    return render_template('newband.html', form=form, title="New band")
+
+@app.route('/band/<int:band_id>/delete', methods=['POST','GET'])
+def deleteband(band_id):
+    band = models.Band.query.get_or_404(band_id)
+
+    if session['user_id'] != band.owner:
+        flash('You are not authorized to delete this band.', 'error')
+        return redirect('/')
+    else:
+        db.session.delete(band)
+        db.session.commit()
+        return redirect('/')
+
+@app.route('/band/<int:band_id>/edit', methods=['POST','GET'])
+def editband(band_id):
+    band = models.Band.query.get_or_404(band_id)
+
+    if session['user_id'] != band.owner:
+        flash('You are not authorised to edit this band.', 'error')
+        return redirect('/')
+    
+    form = EntryForm(obj=band)
+
+    if form.validate_on_submit():
+        band.name = form.name.data
+        band.genre = form.genre.data
+        band.description = form.description.data
+        db.session.commit()
+        return redirect('/')
+
+    return render_template('newband.html', form = form, band = band, title = "Edit band")
 
 @app.route('/logout', methods=['GET'])
 def logout():

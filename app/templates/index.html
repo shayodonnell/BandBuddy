@@ -1,5 +1,5 @@
-<!DOCTYPE html lang="en-gb">
-<html>
+<!DOCTYPE html>
+<html lang="en-gb">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -7,15 +7,17 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <title>BandBuddy</title>
         <link rel="stylesheet" href="static/css/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     </head>
     <body>
         <nav class="navbar navbar-expand-lg" style="background-color: blue; width: 100%; padding: 0;">
             <div class="container-fluid">
-                <a class="navbar-brand text-white" href="/">BandBuddy</a>
+                <a class="navbar-brand text-white" href="/"><h1>BandBuddy</h1></a>
                 <div class="d-flex">
                     {% if session.logged_in %}
                         <div class="nav-buttons">
-                            <a class="btn btn-new-band" href="/newband"">Create band</a>
+                            <a class="btn btn-hollow" href="/newpost"">Create post</a>
+                            <a class="btn btn-hollow" href="/newband"">Create band</a>
                             <a class="btn btn-light" href="/logout" style ="color: blue;">Log out</a>
                         </div>
                         
@@ -25,24 +27,35 @@
                 </div>
             </div>
         </nav>
-        <div class="container mt-5">
+        <div class="container mt-5 feed">
             <h1 class="mb-4">Feed</h1>
-            {% if bands %}
-                {% for band in bands %}
-                    <div class="col-md-4">
+            {% if feed_items %}
+                {% for item in feed_items %}
+                    {% if item.type == "post" %}
                         <div class="card mb-4">
                             <div class="card-body">
-                                <h5 class="card-title">{{ band.name }}</h5>
-                                <p class="card-text">{{ band.description }}</p>
-                                <p><strong>Genre: </strong>{{ band.genre }}</p>
-
-                                <a href="/band/{{ band.id }}" class="btn btn-primary">View</a>
+                                <h2 class="card-title">{{ item.author }}</h2>
+                                <p class="card-text">{{ item.content }}</p>
+                                <img src="{{ item.image }}" class="card-img-top post-img" alt="...">
+                                <h2><i class="bi bi-heart like" style="text-align: right; float: right;"></i></h2>
                             </div>
                         </div>
-                    </div>
+                    {% elif item.type == "bandad" %}
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <p class="card-text deadline" style="text-align: right; float: right;"> Expires {{ item.formatted_deadline }}</p>
+                                <h2 class="card-title"><strong>{{ item.band_name }}</strong> are looking for a <strong>{{ item.lookingfor }}</strong></h2>
+                                <div class="card-interacts">
+                                    <h2><i class="bi bi-heart like" style="text-align: right; float: right;"></i></h2>
+                                    <a class="btn btn-regint" href="/bandad/{{ item.id }}">Register interest<i class="bi bi-check-square" style="margin-left: 10px;"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                            
+                    {% endif %}
                 {% endfor %}
             {% else %}
-                <p>No bands found.</p>
+                <p>No posts yet.</p>
             {% endif %}
         </div>
     </body>
