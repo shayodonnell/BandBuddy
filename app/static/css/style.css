@@ -70,7 +70,7 @@ form{
     margin-right: 15px;
 }
 
-.btn-new-band:hover{
+.btn-hollow:hover{
     background-color:white;
     color: blue;
     border-color: blue;
@@ -117,4 +117,10 @@ form{
 .btn-regint:hover{
     background-color: blue;
     color: white;
+}
+
+.card-interacts{
+    text-align: right;
+    float: right;
+    font-size: 1.5em;
 }

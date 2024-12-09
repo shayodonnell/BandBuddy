@@ -8,6 +8,7 @@
         <title>BandBuddy</title>
         <link rel="stylesheet" href="static/css/style.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg" style="background-color: blue; width: 100%; padding: 0;">
@@ -16,9 +17,10 @@
                 <div class="d-flex">
                     {% if session.logged_in %}
                         <div class="nav-buttons">
-                            <a class="btn btn-hollow" href="/newpost"">Create post</a>
-                            <a class="btn btn-hollow" href="/newband"">Create band</a>
-                            <a class="btn btn-light" href="/logout" style ="color: blue;">Log out</a>
+                            <a class="btn btn-hollow" href="/newpost">Create post<i class="bi bi-pencil-square" style="margin-left: 10px;"></i></a>
+                            <a class="btn btn-hollow" href="/newbandad">Create bandAd<i class="bi bi-megaphone-fill" style="margin-left: 10px;"></i></a>
+                            <a class="btn btn-hollow" href="/newband">Create band<i class="bi bi-people-fill" style="margin-left: 10px;"></i></a>
+                            <a class="btn btn-light" href="/logout" style ="color: blue;">Log out<i class="bi bi-box-arrow-right" style="margin-left: 10px;"></i></a>
                         </div>
                         
                     {% else %}
@@ -37,7 +39,10 @@
                                 <h2 class="card-title">{{ item.author }}</h2>
                                 <p class="card-text">{{ item.content }}</p>
                                 <img src="{{ item.image }}" class="card-img-top post-img" alt="...">
-                                <h2><i class="bi bi-heart like" style="text-align: right; float: right;"></i></h2>
+                                <div class="card-interacts" style="">
+                                    <i class="bi {{ 'bi-heart-fill' if item.liked else 'bi-heart' }} like" post-id="{{ item.id }}"></i>
+                                    <span class="like-count">{{ item['like_count'] }}</span>
+                                </div>
                             </div>
                         </div>
                     {% elif item.type == "bandad" %}
@@ -46,8 +51,14 @@
                                 <p class="card-text deadline" style="text-align: right; float: right;"> Expires {{ item.formatted_deadline }}</p>
                                 <h2 class="card-title"><strong>{{ item.band_name }}</strong> are looking for a <strong>{{ item.lookingfor }}</strong></h2>
                                 <div class="card-interacts">
-                                    <h2><i class="bi bi-heart like" style="text-align: right; float: right;"></i></h2>
-                                    <a class="btn btn-regint" href="/bandad/{{ item.id }}">Register interest<i class="bi bi-check-square" style="margin-left: 10px;"></i></a>
+                                    {% if item.admin %}
+                                        <a class="btn btn-primary" href="/band_ad/{{ item.id }}/registered_interests">View interested users</a>
+                                    {% else %}
+                                        <button class="btn btn-regint" ad-id="{{ item.id }}" {{ 'disabled' if item.interested }}>
+                                            {{ 'Interest registered' if item.interested else 'Register Interest' }}
+                                            <i class="bi bi-check-square" style="margin-left: 10px;"></i>
+                                        </button>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>

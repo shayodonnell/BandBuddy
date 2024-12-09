@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import IntegerField, StringField, SubmitField, PasswordField, DateField
+from wtforms import IntegerField, StringField, SubmitField, PasswordField, DateField, SelectField
 from wtforms.validators import DataRequired
 
 class SignupForm(FlaskForm):
@@ -26,7 +26,7 @@ class PostForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class BandAdForm(FlaskForm):
-    band = IntegerField('Band', validators=[DataRequired()])
+    band = SelectField('Band', validators=[DataRequired()])
     lookingfor = StringField('Looking for', validators=[DataRequired()])
     deadline = DateField('Deadline', validators=[DataRequired()])
     submit = SubmitField('Submit')

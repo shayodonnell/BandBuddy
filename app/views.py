@@ -1,11 +1,11 @@
-from flask import render_template, flash, request, redirect, session
+from flask import render_template, flash, request, redirect, session, jsonify
 from app import app, db, models
 import datetime
 from .forms import SignupForm, SigninForm, EntryForm, PostForm, BandAdForm
 
 @app.route('/', methods=['GET'])
 def feed():
-    bandads = models.BandAd.query.all()
+    bandads = models.Bandad.query.all()
     bandad_items = [
         {
             "type": "bandad",
@@ -14,7 +14,9 @@ def feed():
             "deadline": bandad.deadline,
             "formatted_deadline": bandad.deadline.strftime("%d %b"),
             "date": bandad.date,
-            "id": bandad.id
+            "id": bandad.id,
+            "interested": bool(models.Interest.query.filter_by(user_id=session['user_id'], ad_id=bandad.id).first()) if session.get('logged_in', False) else False,
+            "admin": bool(models.Band.query.get(bandad.band).owner == session['user_id']) if session.get('logged_in', False) else False
         }
         for bandad in bandads
     ]
@@ -26,7 +28,9 @@ def feed():
             "image": post.image,
             "author": models.User.query.get(post.author).name,
             "date": post.date,
-            "id": post.id
+            "id": post.id,
+            "like_count": models.Like.query.filter_by(post_id=post.id).count(),
+            "liked": bool(models.Like.query.filter_by(user_id=session['user_id'], post_id=post.id).first()) if session.get('logged_in', False) else False
         }
         for post in posts
     ]
@@ -34,13 +38,63 @@ def feed():
     print(feed_items)
     return render_template('index.html', feed_items=feed_items, title="Feed")
 
-@app.route('/newad', methods=['GET', 'POST'])
+@app.route('/like/<int:post_id>', methods=['POST'])
+def toggle_like(post_id):
+    if(session['logged_in'] == False):
+        return jsonify({"error": "You must be logged in to like a post."}), 403
+    
+    user_id = session['user_id']
+    existing_like = models.Like.query.filter_by(user_id=user_id, post_id=post_id).first()
+    if existing_like:
+        db.session.delete(existing_like)
+        db.session.commit()
+        liked=False
+    else:
+        new_like = models.Like(user_id=user_id, post_id=post_id)
+        db.session.add(new_like)
+        db.session.commit()
+        liked=True
+    
+    like_count = models.Like.query.filter_by(post_id=post_id).count()
+
+    return jsonify({"like_count": like_count, "liked": liked})
+
+@app.route('/band_ad/<int:ad_id>/register_interest', methods=['POST'])
+def register_interest(ad_id):
+    print("Hi")
+    if(session['logged_in'] == False):
+        return jsonify({"error": "You must be logged in to register interest in a band ad."}), 403
+    
+    user_id = session['user_id']
+    new_interest = models.Interest(user_id=user_id, ad_id=ad_id, date=datetime.datetime.now())
+    db.session.add(new_interest)
+    db.session.commit()
+
+    return jsonify({"success": True})
+
+@app.route('/band_ad/<int:ad_id>/registered_interests', methods=['GET'])
+def registered_interests(ad_id):
+    interests = models.Interest.query.filter_by(ad_id=ad_id).all()
+    interest_items = [
+        {
+            "user": models.User.query.get(interest.user_id).name,
+            "date": interest.date.strftime("%d %b")
+        }
+        for interest in interests
+    ]
+    feed_items = sorted(interest_items, key = lambda x: x['date'], reverse=True)
+    return render_template('interests.html', feed_items=feed_items, title="Interested users")
+
+@app.route('/newbandad', methods=['GET', 'POST'])
 def newad():
     if(session['logged_in'] == False):
-        return redirect('/signin')
+        return jsonify({"error": "You must be logged in to post an ad."}), 403
     form = BandAdForm()
+    user_bands = models.Band.query.filter_by(owner=session['user_id']).all()
+    print("bands:",user_bands)
+    form.band.choices = [(band.id, band.name) for band in user_bands]
     if form.validate_on_submit():
-        newAd = models.BandAd(band=form.band.data, lookingfor=form.lookingfor.data, deadline=form.deadline.data, date=datetime.datetime.now())
+        newAd = models.Bandad(band=form.band.data, lookingfor=form.lookingfor.data, deadline=form.deadline.data, date=datetime.datetime.now())
         db.session.add(newAd)
         db.session.commit()
         return redirect('/')
