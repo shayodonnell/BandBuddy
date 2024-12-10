@@ -38,8 +38,8 @@
                             <div class="card-body">
                                 <h2 class="card-title">{{ item.author }}</h2>
                                 <p class="card-text">{{ item.content }}</p>
-                                <img src="{{ item.image }}" class="card-img-top post-img" alt="...">
-                                <div class="card-interacts" style="">
+                                {% if item.image %}<img src="{{ item.image }}" class="card-img-top post-img" alt="...">{% endif %}
+                                <div class="card-interacts">
                                     <i class="bi {{ 'bi-heart-fill' if item.liked else 'bi-heart' }} like" post-id="{{ item.id }}"></i>
                                     <span class="like-count">{{ item['like_count'] }}</span>
                                 </div>

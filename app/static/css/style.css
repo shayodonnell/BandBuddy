@@ -123,4 +123,11 @@ form{
     text-align: right;
     float: right;
     font-size: 1.5em;
+    background-color: whitesmoke;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.like{
+    cursor: pointer;
 }
