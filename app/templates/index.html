@@ -28,7 +28,7 @@
                                                     </span>
                                                 {% endfor %}
                                             <div class="like-container">
-                                                <i class="bi {{ 'bi-heart-fill' if post.liked else 'bi-heart' }} like" data-post-id="{{ post.id }}"></i>
+                                                <i class="bi {{ 'bi-heart-fill' if post.liked else 'bi-heart' }} like" post-id="{{ post.id }}"></i>
                                                 <span class="like-count">{{ post['like_count'] }}</span>
                                             </div>
                                         </div>
