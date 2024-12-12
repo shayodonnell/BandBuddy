@@ -74,6 +74,19 @@ form{
     transform: scale(1.1);
 }
 
+.post-pfp{
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.pfp-and-name{
+    display: inline-flex;
+    gap: 10px;
+    align-items: center;
+}
+
 .nav-buttons {
     display: flex;
     align-items: center;
@@ -138,6 +151,9 @@ form{
     background-color: white;
     color: blue;
     border: 2px solid blue;
+    margin-left: auto;
+    margin-right: 0;
+    border-radius: 9999px;
 }
 .btn-regint:hover{
     background-color: blue;
@@ -151,14 +167,13 @@ form{
     width: 100%;
     background-color: whitesmoke;
     border-radius: 9999px;
-    padding-right: 5%;
 }
 
-.like{
+.like-container{
     display: inline-block;
     margin-left: auto;
+    margin-right: 15px;
     color: blue;
-
 }
 
 .tag {

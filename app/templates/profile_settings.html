@@ -1,11 +1,11 @@
 {% extends "navbar_template.html" %}
 {% block content %}
-    <div class="profile-settings">
+    <div id="profile-settings" class="profile-settings">
         <h2>Profile settings</h2>
         <br>
         <div class="change-password">
             <h3>Change password</h3>
-            <form action="" method="post" name="profile_settings">
+            <form action="" method="post" name="profile_password">
             {{ passwordForm.hidden_tag() }}
             <div class="mb-3">
                 {{ passwordForm.password.label(class="form-label") }}
@@ -52,6 +52,10 @@
                 {{ pfpForm.url(class="form-control") }}
             </div>
             <p>Paste a URL to update your profile picture. <a href="https://postimages.org">https://postimages.org</a> offers free image hosting.</p>
+            <div class="mb-3" style="margin-bottom: 20px;">
+                <p>Preview:</p>
+                <img id="profile-picture-preview" src="" alt="Profile Picture Preview" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+            </div>
             {{ pfpForm.submit(class="btn btn-primary" )}}
             </form>
         </div>

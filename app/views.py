@@ -1,13 +1,13 @@
-from flask import render_template, flash, request, redirect, session, jsonify
+from flask import render_template, flash, request, redirect, session, jsonify, get_flashed_messages
 from app import app, db, models
 import datetime, random
 from .forms import SignupForm, SigninForm, EntryForm, PostForm, BandAdForm, NewPassword, TagPreferences, ProfilePictureForm
 
 profile_pictures = [
-    "https://i.postimg.cc/Nfrz5DSX/temp-Imagea-S53-L8.avif",
-    "https://i.postimg.cc/sgYHJXVD/temp-Image-IJdan6.avif",
-    "https://i.postimg.cc/tg9SvjTd/temp-Image-Nci-PGI.avif",
-    "https://i.postimg.cc/VkQHMMPV/temp-Images9z-Hs-R.avif"
+    "/static/assets/taya-iv-sBr-g8wJw5k-unsplash.jpg",
+    "/static/assets/temp-Image-IJdan6.avif",
+    "/static/assets/temp-Image-Nci-PGI.avif",
+    "/static/assets/temp-Imagea-S53-L8.avif"
 ]
 
 def get_random_profile_picture():
@@ -31,7 +31,8 @@ def feed():
                 "id": post.id,
                 "like_count": models.Like.query.filter_by(post_id=post.id).count(),
                 "liked": bool(models.Like.query.filter_by(user_id=session['user_id'], post_id=post.id).first()) if session.get('logged_in', False) else False,
-                "tags": [tag.name for tag in post.tags]
+                "tags": [tag.name for tag in post.tags],
+                "profile_picture": models.User.query.get(post.author_id).profile_picture
             }
             for post in models.Post.query.all()
             if any(tag.name in user_tags for tag in post.tags)
@@ -64,7 +65,9 @@ def feed():
             "id": post.id,
             "like_count": models.Like.query.filter_by(post_id=post.id).count(),
             "liked": bool(models.Like.query.filter_by(user_id=session['user_id'], post_id=post.id).first()) if session.get('logged_in', False) else False,
-            "tags": [tag.name for tag in post.tags]
+            "tags": [tag.name for tag in post.tags],
+            "profile_picture": models.User.query.get(post.author_id).profile_picture
+
         }
         for post in posts
     ]
@@ -74,7 +77,8 @@ def feed():
 
 @app.route('/like/<int:post_id>', methods=['POST'])
 def toggle_like(post_id):
-    if(session['logged_in'] == False):
+    print(f"Route hit with post_id: {post_id}")
+    if not session.get('logged_in', False):
         return jsonify({"error": "You must be logged in to like a post."}), 403
     
     user_id = session['user_id']
@@ -128,7 +132,7 @@ def newad():
     print("bands:",user_bands)
     form.band.choices = [(band.id, band.name) for band in user_bands]
     if form.validate_on_submit():
-        newAd = models.Bandad(band=form.band.data, lookingfor=form.lookingfor.data, deadline=form.deadline.data, date=datetime.datetime.now())
+        newAd = models.Bandad(band_id=form.band.data, lookingfor=form.lookingfor.data, deadline=form.deadline.data, date=datetime.datetime.now())
         db.session.add(newAd)
         db.session.commit()
         return redirect('/')
@@ -176,6 +180,7 @@ def newpost():
         db.session.add(newPost)
         db.session.commit()
         
+        get_flashed_messages()
         flash('Post created successfully!', 'success')
         return redirect('/')
     
@@ -198,6 +203,7 @@ def deleteband(band_id):
     band = models.Band.query.get_or_404(band_id)
 
     if session['user_id'] != band.owner:
+        get_flashed_messages()
         flash('You are not authorized to delete this band.', 'error')
         return redirect('/')
     else:
@@ -210,6 +216,7 @@ def editband(band_id):
     band = models.Band.query.get_or_404(band_id)
 
     if session['user_id'] != band.owner:
+        get_flashed_messages()
         flash('You are not authorised to edit this band.', 'error')
         return redirect('/')
     
@@ -235,7 +242,13 @@ def signup():
 
     form = SignupForm()
     if form.validate_on_submit():
+        existingUser = models.User.query.filter_by(email=form.email.data).first()
+        if existingUser:
+            get_flashed_messages()
+            flash('Email already exists.', 'error')
+            return redirect('/signup')
         if form.password.data != form.confirm_password.data:
+            get_flashed_messages()
             flash('Passwords do not match.', 'error')
         else:
             newUser = models.User(name=form.name.data, email=form.email.data, password=form.password.data, profile_picture=get_random_profile_picture())
@@ -244,6 +257,7 @@ def signup():
             session['user_id'] = newUser.id
             session['logged_in'] = True
             session['profile_picture'] = newUser.profile_picture
+            session['user_name'] = newUser.name
             return redirect('/')
     return render_template('signin-signup.html', form=form, title="Sign Up")
 
@@ -260,6 +274,7 @@ def signin():
             session['profile_picture'] = user.profile_picture
             return redirect('/')
         else:
+            get_flashed_messages()
             flash('Invalid email or password.', 'error')
     return render_template('signin-signup.html', form=form, title="Sign In")
 
@@ -269,11 +284,14 @@ def profile_settings(user_id):
     if passwordForm.validate_on_submit():
         print("Form validated")
         if passwordForm.password.data != passwordForm.confirm_password.data:
-            flash('Passwords do not match.', 'error')
+            get_flashed_messages()
+            flash('Passwords do not match.', 'danger')
         else:
             user = models.User.query.get(user_id)
             user.password = passwordForm.password.data
             db.session.commit()
+            get_flashed_messages()
+            flash('Password updated successfully!', 'success')
             return redirect('/')
 
     # Fetch user's existing tag preferences
@@ -296,8 +314,10 @@ def profile_settings(user_id):
         if tag not in user.tag_preferences:
             user.tag_preferences.append(tag)
             db.session.commit()
+            get_flashed_messages()
             flash(f"Tag '{tag_name}' added to your preferences!", "success")
         else:
+            get_flashed_messages()
             flash(f"Tag '{tag_name}' is already in your preferences.", "info")
         
         return redirect(f'/profile_settings/{user_id}')

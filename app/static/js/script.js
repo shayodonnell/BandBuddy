@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const postId = this.getAttribute('post-id');
             const likeCountSpan = this.parentElement.querySelector('.like-count');
+            console.log(`Post ID: ${postId}`);
 
             $.ajax({
                 url: `/like/${postId}`,
@@ -63,4 +64,9 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+    if(document.body.id === 'profile-settings') {
+        document.querySelector('input[name="url"]').addEventListener('input', function() {
+            document.getElementById('profile-picture-preview').src = this.value;
+        });
+    }
 });

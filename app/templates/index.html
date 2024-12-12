@@ -14,7 +14,10 @@
                             <div class="col-12">
                                 <div class="card mb-3">
                                     <div class="card-body">
-                                        <h2 class="card-title">{{ post.author }}</h2>
+                                        <div class="pfp-and-name">
+                                            <img src="{{ post.profile_picture }}" class="post-pfp" alt="...">
+                                            <h2 class="card-title">{{ post.author }}</h2>
+                                        </div>
                                         <p class="card-text">{{ post.content }}</p>
                                             {% if post.image %}<img src="{{ post.image }}" class="card-img-top post-img" alt="...">{% endif %}
                                             <div class="card-interacts">
@@ -24,8 +27,8 @@
                                                         {{ tag }}
                                                     </span>
                                                 {% endfor %}
-                                            <div class="like">
-                                                <i class="bi {{ 'bi-heart-fill' if post.liked else 'bi-heart' }} like" post-id="{{ post.id }}"></i>
+                                            <div class="like-container">
+                                                <i class="bi {{ 'bi-heart-fill' if post.liked else 'bi-heart' }} like" data-post-id="{{ post.id }}"></i>
                                                 <span class="like-count">{{ post['like_count'] }}</span>
                                             </div>
                                         </div>
@@ -48,7 +51,10 @@
                         <div class="card mb-3">
                             <div class="card-body">
                                 {% if item.type == "post" %}
-                                    <h2 class="card-title">{{ item.author }}</h2>
+                                    <div class="pfp-and-name">
+                                        <img src="{{ item.profile_picture }}" class="post-pfp" alt="...">
+                                        <h2 class="card-title">{{ item.author }}</h2>
+                                    </div>
                                     <p class="card-text">{{ item.content }}</p>
                                     {% if item.image %}<img src="{{ item.image }}" class="card-img-top post-img" alt="...">{% endif %}
                                     <div class="card-interacts">
@@ -64,10 +70,10 @@
                                                 No tag
                                             </span>
                                         {% endif %}
-                                       <div class="like">
+                                        <div class="like-container">
                                             <i class="bi {{ 'bi-heart-fill' if item.liked else 'bi-heart' }} like" post-id="{{ item.id }}"></i>
                                             <span class="like-count">{{ item['like_count'] }}</span>
-                                       </div>
+                                        </div>
                                     </div>
                                 {% elif item.type == "bandad" %}
                                     <p class="card-text deadline" style="text-align: right; float: right;"> Expires {{ item.formatted_deadline }}</p>
