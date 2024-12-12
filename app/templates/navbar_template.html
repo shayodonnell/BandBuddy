@@ -44,9 +44,9 @@
                 </div>
             </div>
         </nav>
-        <div class="container mt-3">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container mt-3">
                     <div class="alert-container">
                         {% for category, message in messages %}
                             <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
@@ -55,9 +55,9 @@
                             </div>
                         {% endfor %}
                     </div>
-                {% endif %}
-            {% endwith %}
-        </div>
+                </div>
+            {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
     </body>
 </html>
