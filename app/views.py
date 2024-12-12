@@ -243,6 +243,7 @@ def signup():
             db.session.commit()
             session['user_id'] = newUser.id
             session['logged_in'] = True
+            session['profile_picture'] = newUser.profile_picture
             return redirect('/')
     return render_template('signin-signup.html', form=form, title="Sign Up")
 
@@ -274,17 +275,31 @@ def profile_settings(user_id):
             user.password = passwordForm.password.data
             db.session.commit()
             return redirect('/')
-    
+
+    # Fetch user's existing tag preferences
     tag_items = models.Tag.query.filter(models.Tag.users.any(id=user_id)).all()
-    
+
     tagForm = TagPreferences()
     if tagForm.validate_on_submit():
-        tag = models.Tag(name=tagForm.tag.data)
-        db.session.add(tag)
-        db.session.commit()
+        tag_name = tagForm.tag.data.strip()
+
+        # Check if the tag exists
+        tag = models.Tag.query.filter_by(name=tag_name).first()
+        if not tag:
+            # Create the tag if it doesn't exist
+            tag = models.Tag(name=tag_name)
+            db.session.add(tag)
+            db.session.flush()  # Assign an ID to the tag
+        
+        # Add the tag to the user's preferences if not already added
         user = models.User.query.get(user_id)
-        user.tag_preferences.append(tag)
-        db.session.commit()
+        if tag not in user.tag_preferences:
+            user.tag_preferences.append(tag)
+            db.session.commit()
+            flash(f"Tag '{tag_name}' added to your preferences!", "success")
+        else:
+            flash(f"Tag '{tag_name}' is already in your preferences.", "info")
+        
         return redirect(f'/profile_settings/{user_id}')
     else:
         print(tagForm.errors)
@@ -298,4 +313,12 @@ def profile_settings(user_id):
         return redirect(f'/profile_settings/{user_id}')
     else:
         print(pfpForm.errors)
-    return render_template('profile_settings.html', passwordForm=passwordForm, tagForm=tagForm, tag_items=tag_items, pfpForm=pfpForm, title="Profile Settings")
+
+    return render_template(
+        'profile_settings.html',
+        passwordForm=passwordForm,
+        tagForm=tagForm,
+        tag_items=tag_items,
+        pfpForm=pfpForm,
+        title="Profile Settings"
+    )
