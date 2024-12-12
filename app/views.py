@@ -145,19 +145,15 @@ def newpost():
     
     form = PostForm()
     if form.validate_on_submit():
-        # Retrieve the tag from the form
         tag_name = form.tag.data.strip()
         
         if tag_name:
-            # Check if the tag already exists
             tag = models.Tag.query.filter_by(name=tag_name).first()
             if not tag:
-                # Create a new Tag if it doesn't exist
                 tag = models.Tag(name=tag_name)
                 db.session.add(tag)
-                db.session.flush()  # Flush to assign an ID to the tag
+                db.session.flush()
             
-            # Create the new Post
             newPost = models.Post(
                 content=form.content.data,
                 image=form.image.data,
@@ -165,10 +161,8 @@ def newpost():
                 date=datetime.datetime.utcnow()
             )
             
-            # Associate the tag with the post
             newPost.tags.append(tag)
         else:
-            # If no tag is provided, create the post without tags
             newPost = models.Post(
                 content=form.content.data,
                 image=form.image.data,
@@ -176,7 +170,6 @@ def newpost():
                 date=datetime.datetime.utcnow()
             )
         
-        # Add and commit the new post
         db.session.add(newPost)
         db.session.commit()
         
@@ -294,22 +287,18 @@ def profile_settings(user_id):
             flash('Password updated successfully!', 'success')
             return redirect('/')
 
-    # Fetch user's existing tag preferences
     tag_items = models.Tag.query.filter(models.Tag.users.any(id=user_id)).all()
 
     tagForm = TagPreferences()
     if tagForm.validate_on_submit():
         tag_name = tagForm.tag.data.strip()
 
-        # Check if the tag exists
         tag = models.Tag.query.filter_by(name=tag_name).first()
         if not tag:
-            # Create the tag if it doesn't exist
             tag = models.Tag(name=tag_name)
             db.session.add(tag)
-            db.session.flush()  # Assign an ID to the tag
+            db.session.flush()
         
-        # Add the tag to the user's preferences if not already added
         user = models.User.query.get(user_id)
         if tag not in user.tag_preferences:
             user.tag_preferences.append(tag)
