@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
-    if(document.body.id === 'profile-settings') {
+    if(window.location.pathname.includes('profile_settings')) {
         document.querySelector('input[name="url"]').addEventListener('input', function() {
             document.getElementById('profile-picture-preview').src = this.value;
         });
