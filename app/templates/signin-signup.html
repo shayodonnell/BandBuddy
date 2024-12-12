@@ -1,5 +1,5 @@
 <!DOCTYPE html lang="en-gb">
-<html>
+<html lang="en-gb">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -26,6 +26,9 @@
                         <div class="mb-3">
                             {{ form.email.label(class="form-label") }}
                             {{ form.email(class="form-control") }}
+                            {% if form.email.errors %}
+                                <small class="text-danger">{{ form.email.errors[0] }}</small>
+                            {% endif %}
                         </div>
                         <div class="mb-3">
                             {{ form.password.label(class="form-label") }}

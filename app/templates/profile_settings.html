@@ -1,0 +1,58 @@
+{% extends "navbar_template.html" %}
+{% block content %}
+    <div class="profile-settings">
+        <h2>Profile settings</h2>
+        <br>
+        <div class="change-password">
+            <h3>Change password</h3>
+            <form action="" method="post" name="profile_settings">
+            {{ passwordForm.hidden_tag() }}
+            <div class="mb-3">
+                {{ passwordForm.password.label(class="form-label") }}
+                {{ passwordForm.password(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ passwordForm.confirm_password.label(class="form-label") }}
+                {{ passwordForm.confirm_password(class="form-control") }}
+            </div>
+            {{ passwordForm.submit(class="btn btn-primary") }}
+            </form>
+        </div>
+        <div class="tag-preferences">
+            <h3>Tag preferences</h3>
+            <h4>Current tags</h4>
+            {% if tag_items %}
+                <div class="container current-tags">
+                    {% for tag in tag_items %}
+                    <span class="tag profile-settings-tag">
+                        <span class="tag-icon"><i class="bi bi-hash"></i></span>
+                        {{ tag.name }}
+                    </span>
+                {% endfor %}
+                </div>
+            {% endif %}
+            
+            <h4>Add tags</h4>
+            <form action="" method="post" name="tag_settings">
+            {{ tagForm.hidden_tag() }}
+            <div class="mb-3">
+                {{ tagForm.tag.label(class="form-label") }}
+                {{ tagForm.tag(class="form-control") }}
+            </div>
+            {{ tagForm.submit(class="btn btn-primary") }}
+            </form>
+        </div>
+
+        <div class="profile-picture-settings">
+            <h3>Profile picture</h3>
+            <form actions="" method="post" name="profile_picture">
+            {{ pfpForm.hidden_tag() }}
+            <div class="mb-3">
+                {{ pfpForm.url.label(class="form-label") }}
+                {{ pfpForm.url(class="form-control") }}
+            </div>
+            <p>Paste a URL to update your profile picture. <a href="https://postimages.org">https://postimages.org</a> offers free image hosting.</p>
+            {{ pfpForm.submit(class="btn btn-primary" )}}
+            </form>
+        </div>
+{% endblock %}

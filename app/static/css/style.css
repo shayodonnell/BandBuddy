@@ -16,8 +16,6 @@ body {
 }
 
 .btn{
-    min-width: 44px;   
-    min-height: 44px;
     font-size: calc(0.6em + 0.5vw)
 }
 
@@ -63,21 +61,42 @@ form{
     height: auto;
 }
 
+.profile-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    transition:  0.2s ease;
+}
+
+.profile-img:hover{
+    transform: scale(1.1);
+}
+
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 30px;
+}
+
+.dropdown-menu{
+    min-width: 100px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1)
+}
+
 .btn-hollow{
     background-color: blue;
     color: white;
     border: 2px solid white;
-    margin-right: 15px;
 }
 
 .btn-hollow:hover{
     background-color:white;
     color: blue;
     border-color: blue;
-}
-
-.nav-buttons{
-    margin: 15px;
 }
 
 .new-band{
@@ -89,24 +108,30 @@ form{
 }
 
 .deadline{
-    color: grey
+    color: #595959;
 }
 
 .feed{
-    max-width: 40%;
-}
+    margin-top: 20px;
+    max-width: 50%;
+    @media (max-width: 1200px) {
+        max-width: 70%;
+    }
+    @media (max-width: 992px) {
+        max-width: 80%;
+    }
+    @media (max-width: 768px) {
+        max-width: 90%;
+    }
+    @media (max-width: 576px) {
+        max-width: 100%;
+    }
 
-.card-interacts{
-    margin-top: 25px;
 }
 
 .post-img{
     border-radius: 10px;
     margin-bottom: 20px;
-}
-
-.like{
-    color: blue;
 }
 
 .btn-regint{
@@ -120,14 +145,106 @@ form{
 }
 
 .card-interacts{
-    text-align: right;
-    float: right;
-    font-size: 1.5em;
+    display: flex; /* Enables Flexbox */
+    justify-content: space-between; /* Distributes space between items */
+    align-items: center; /* Vertically centers items */
+    width: 100%;
     background-color: whitesmoke;
-    padding: 5px;
-    border-radius: 10px;
+    border-radius: 9999px;
+    padding-right: 5%;
 }
 
 .like{
+    display: inline-block;
+    margin-left: auto;
+    color: blue;
+
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    text-align: left;
+    padding: 0.5em 1em;
+    padding-left: 8px;
+    border-radius: 9999px;
+    background-color: blue;
+    color: white;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
     cursor: pointer;
+}
+.empty-tag{
+    display: inline-flex;
+    align-items: center;
+    text-align: left;
+    padding: 0.5em 1em;
+    padding-left: 8px;
+    border-radius: 9999px;
+    background-color: white;
+    border: 1px solid #d3d3d3;
+    color: 595959;
+    font-size: 0.9em;
+}
+
+.tag:hover {
+    background-color: rgb(0, 0, 200);
+    transform: scale(1.05);
+}
+
+.tag-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-right: 0.5em;
+    border-radius: 50%;
+    background-color: white;
+    opacity: 1;
+}
+
+.tag-icon i {
+    color: blue;
+    font-size: 0.8em;
+}
+
+.bi-heart{
+    cursor: pointer;
+}
+.bi-heart-fill{
+    cursor: pointer;
+}
+
+.profile-settings{
+    max-width: 50%;
+    padding: 20px;
+    @media (max-width: 1200px) {
+        max-width: 70%;
+    }
+    @media (max-width: 992px) {
+        max-width: 80%;
+    }
+    @media (max-width: 768px) {
+        max-width: 90%;
+    }
+    @media (max-width: 576px) {
+        max-width: 100%;
+    }
+}
+
+.change-password{
+    margin-bottom: 20px;
+}
+.tag-preferences{
+    margin-bottom:20px;
+}
+
+.current-tags{
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.profile-settings-tag{
+    margin-bottom: 5px;
 }
