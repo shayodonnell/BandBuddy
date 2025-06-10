@@ -195,6 +195,7 @@ def createband():
 def deleteband(band_id):
     band = models.Band.query.get_or_404(band_id)
 
+    # Verify that the current user owns the band via owner_id
     if session['user_id'] != band.owner_id:
         get_flashed_messages()
         flash('You are not authorized to delete this band.', 'error')
@@ -208,6 +209,7 @@ def deleteband(band_id):
 def editband(band_id):
     band = models.Band.query.get_or_404(band_id)
 
+    # Ensure only the owner can edit the band
     if session['user_id'] != band.owner_id:
         get_flashed_messages()
         flash('You are not authorised to edit this band.', 'error')
