@@ -49,7 +49,7 @@ def feed():
             "date": bandad.date,
             "id": bandad.id,
             "interested": bool(models.Interest.query.filter_by(user_id=session['user_id'], ad_id=bandad.id).first()) if session.get('logged_in', False) else False,
-            "admin": bool(models.Band.query.get(bandad.band_id).owner == session['user_id']) if session.get('logged_in', False) else False
+            "admin": bool(models.Band.query.get(bandad.band_id).owner_id == session['user_id']) if session.get('logged_in', False) else False
         }
         for bandad in bandads
     ]
@@ -100,7 +100,7 @@ def toggle_like(post_id):
 @app.route('/band_ad/<int:ad_id>/register_interest', methods=['POST'])
 def register_interest(ad_id):
     print("Hi")
-    if(session['logged_in'] == False):
+    if not session.get('logged_in', False):
         return jsonify({"error": "You must be logged in to register interest in a band ad."}), 403
     
     user_id = session['user_id']
@@ -125,7 +125,7 @@ def registered_interests(ad_id):
 
 @app.route('/newbandad', methods=['GET', 'POST'])
 def newad():
-    if(session['logged_in'] == False):
+    if not session.get('logged_in', False):
         return jsonify({"error": "You must be logged in to post an ad."}), 403
     form = BandAdForm()
     user_bands = models.Band.query.filter_by(owner_id=session['user_id']).all()
@@ -181,7 +181,7 @@ def newpost():
 
 @app.route('/newband', methods=['GET', 'POST'])
 def createband():
-    if(session['logged_in'] == False):
+    if not session.get('logged_in', False):
         return redirect('/signin')
     form = EntryForm()
     if form.validate_on_submit():
@@ -195,7 +195,7 @@ def createband():
 def deleteband(band_id):
     band = models.Band.query.get_or_404(band_id)
 
-    if session['user_id'] != band.owner:
+    if session['user_id'] != band.owner_id:
         get_flashed_messages()
         flash('You are not authorized to delete this band.', 'error')
         return redirect('/')
@@ -208,7 +208,7 @@ def deleteband(band_id):
 def editband(band_id):
     band = models.Band.query.get_or_404(band_id)
 
-    if session['user_id'] != band.owner:
+    if session['user_id'] != band.owner_id:
         get_flashed_messages()
         flash('You are not authorised to edit this band.', 'error')
         return redirect('/')
