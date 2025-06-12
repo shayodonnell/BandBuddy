@@ -4,6 +4,7 @@ import pytest
 from app import app, db
 from app.models import User, Band, Bandad, Interest
 import datetime
+from werkzeug.security import generate_password_hash
 
 @pytest.fixture()
 def app_context():
@@ -17,7 +18,8 @@ def app_context():
 
 def test_user_creation(app_context):
     with app_context.app_context():
-        user = User(name='Test User', email='test@example.com', password='secret')
+        user = User(name='Test User', email='test@example.com',
+                    password_hash=generate_password_hash('secret'))
         db.session.add(user)
         db.session.commit()
         retrieved = User.query.filter_by(email='test@example.com').first()
