@@ -3,6 +3,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 import pytest
 from app import app, db
 from app.models import User
+from werkzeug.security import generate_password_hash
 
 @pytest.fixture()
 def client():
@@ -16,7 +17,8 @@ def client():
         db.drop_all()
 
 def create_user(name="User", email="user@example.com"):
-    user = User(name=name, email=email, password="secret")
+    user = User(name=name, email=email,
+                password_hash=generate_password_hash("secret"))
     db.session.add(user)
     db.session.commit()
     return user
