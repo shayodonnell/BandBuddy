@@ -134,6 +134,10 @@ def newad():
     form = BandAdForm()
     user_bands = models.Band.query.filter_by(owner_id=session['user_id']).all()
     app.logger.debug("bands: %s", user_bands)
+    if not user_bands:
+        get_flashed_messages()
+        flash("You must create a band before posting an ad", "error")
+        return redirect('/newband')
     form.band.choices = [(band.id, band.name) for band in user_bands]
     if form.validate_on_submit():
         newAd = models.Bandad(band_id=form.band.data, lookingfor=form.lookingfor.data, deadline=form.deadline.data, date=datetime.datetime.now())
