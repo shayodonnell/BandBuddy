@@ -6,7 +6,7 @@
             <div class="list-group">
                 {% for item in feed_items %}
                     <div class="list-group-item">
-                        <h3 class="mb-1">{{ item.user }}</h3>
+                        <h3 class="mb-1">{{ item.user }} <small class="text-muted">{{ item.email }}</small></h3>
                         <small class="text-muted">Interested on {{ item.date }}</small>
                     </div>
                 {% endfor %}
