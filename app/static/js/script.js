@@ -67,6 +67,23 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+    if(window.location.pathname.includes('newpost')) {
+        const imageSwitch = document.getElementById('include-image');
+        const imageGroup = document.getElementById('image-url-group');
+        const imageInput = document.getElementById('image-input');
+        if(imageSwitch && imageGroup && imageInput) {
+            imageSwitch.addEventListener('change', function() {
+                if(this.checked) {
+                    imageGroup.classList.remove('d-none');
+                    imageInput.disabled = false;
+                } else {
+                    imageGroup.classList.add('d-none');
+                    imageInput.disabled = true;
+                    imageInput.value = '';
+                }
+            });
+        }
+    }
     if(window.location.pathname.includes('profile_settings')) {
         document.querySelector('input[name="url"]').addEventListener('input', function() {
             document.getElementById('profile-picture-preview').src = this.value;

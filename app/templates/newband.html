@@ -27,9 +27,13 @@
                     {{ form.content.label(class="form-label") }}
                     {{ form.content(class="form-control") }}
                 </div>
-                <div class="mb-3">
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="include-image">
+                    <label class="form-check-label" for="include-image">Include image</label>
+                </div>
+                <div class="mb-3 d-none" id="image-url-group">
                     {{ form.image.label(class="form-label") }}
-                    {{ form.image(class="form-control") }}
+                    {{ form.image(class="form-control", id="image-input", disabled=True) }}
                 </div>
                 <div class="mb-3">
                     {{ form.tag.label(class="form-label") }}
