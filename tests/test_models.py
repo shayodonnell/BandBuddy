@@ -10,6 +10,7 @@ from werkzeug.security import generate_password_hash
 def app_context():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
     app.config['TESTING'] = True
+    app.config['WTF_CSRF_ENABLED'] = False
     with app.app_context():
         db.create_all()
         yield app
@@ -29,8 +30,10 @@ def test_user_creation(app_context):
 
 def test_register_interest_once(app_context):
     with app_context.app_context():
-        user = User(name='User1', email='user1@example.com', password='pw')
-        owner = User(name='Owner', email='owner@example.com', password='pw')
+        user = User(name='User1', email='user1@example.com',
+                    password_hash=generate_password_hash('pw'))
+        owner = User(name='Owner', email='owner@example.com',
+                     password_hash=generate_password_hash('pw'))
         db.session.add_all([user, owner])
         db.session.commit()
 
