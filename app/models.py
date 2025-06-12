@@ -97,3 +97,8 @@ class Interest(db.Model):
     # Relationships
     user = db.relationship('User', back_populates='interests')
     ad = db.relationship('Bandad', back_populates='interests')
+
+    # Ensure a user can only register interest once per ad
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'ad_id', name='_user_ad_uc'),
+    )
