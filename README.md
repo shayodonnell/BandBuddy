@@ -18,6 +18,16 @@ BandBuddy is a simple Flask web application for musicians to connect and share u
    python db_create.py
    ```
 
+## Environment Variables
+
+The application can be configured using the following environment variables:
+
+- `SECRET_KEY` – Flask secret key. Defaults to `huak-tuah`.
+- `SQLALCHEMY_DATABASE_URI` – Database connection URI. Defaults to a local
+  SQLite database at `app.db`.
+- `SQLALCHEMY_TRACK_MODIFICATIONS` – Set to `True` to enable SQLAlchemy event
+  notifications. Defaults to `False`.
+
 ## Running the App
 
 Start the development server with:
