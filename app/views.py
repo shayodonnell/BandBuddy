@@ -20,7 +20,7 @@ def feed():
         user_id = session['user_id']
         user = models.User.query.get(user_id)
         user_tags = [tag.name for tag in user.tag_preferences]
-        print(user_tags)
+        app.logger.debug(user_tags)
         matching_tag_posts = [
             {
                 "type": "post",
@@ -72,12 +72,12 @@ def feed():
         for post in posts
     ]
     feed_items = sorted(bandad_items + post_items, key = lambda x: x['date'], reverse=True)
-    print(feed_items)
+    app.logger.debug(feed_items)
     return render_template('index.html', feed_items=feed_items, matching_tag_posts=matching_tag_posts, title="Feed")
 
 @app.route('/like/<int:post_id>', methods=['POST'])
 def toggle_like(post_id):
-    print(f"Route hit with post_id: {post_id}")
+    app.logger.debug(f"Route hit with post_id: {post_id}")
     if not session.get('logged_in', False):
         return jsonify({"error": "You must be logged in to like a post."}), 403
     
@@ -99,7 +99,7 @@ def toggle_like(post_id):
 
 @app.route('/band_ad/<int:ad_id>/register_interest', methods=['POST'])
 def register_interest(ad_id):
-    print("Hi")
+    app.logger.debug("Hi")
     if not session.get('logged_in', False):
         return jsonify({"error": "You must be logged in to register interest in a band ad."}), 403
     
@@ -129,7 +129,7 @@ def newad():
         return jsonify({"error": "You must be logged in to post an ad."}), 403
     form = BandAdForm()
     user_bands = models.Band.query.filter_by(owner_id=session['user_id']).all()
-    print("bands:",user_bands)
+    app.logger.debug("bands: %s", user_bands)
     form.band.choices = [(band.id, band.name) for band in user_bands]
     if form.validate_on_submit():
         newAd = models.Bandad(band_id=form.band.data, lookingfor=form.lookingfor.data, deadline=form.deadline.data, date=datetime.datetime.now())
@@ -263,7 +263,7 @@ def signin():
         user = models.User.query.filter_by(email=form.email.data).first()
         if user and user.password == form.password.data:
             session['user_id'] = user.id
-            print(f"Username : {user.name}")
+            app.logger.debug("Username : %s", user.name)
             session['user_name'] = user.name
             session['logged_in'] = True
             session['profile_picture'] = user.profile_picture
@@ -277,7 +277,7 @@ def signin():
 def profile_settings(user_id):
     passwordForm = NewPassword()
     if passwordForm.validate_on_submit():
-        print("Form validated")
+        app.logger.debug("Form validated")
         if passwordForm.password.data != passwordForm.confirm_password.data:
             get_flashed_messages()
             flash('Passwords do not match.', 'danger')
@@ -313,7 +313,7 @@ def profile_settings(user_id):
         
         return redirect(f'/profile_settings/{user_id}')
     else:
-        print(tagForm.errors)
+        app.logger.debug(tagForm.errors)
 
     pfpForm = ProfilePictureForm()
     if pfpForm.validate_on_submit():
@@ -323,7 +323,7 @@ def profile_settings(user_id):
         session['profile_picture'] = user.profile_picture
         return redirect(f'/profile_settings/{user_id}')
     else:
-        print(pfpForm.errors)
+        app.logger.debug(pfpForm.errors)
 
     return render_template(
         'profile_settings.html',
