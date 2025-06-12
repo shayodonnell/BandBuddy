@@ -275,6 +275,10 @@ def signin():
 
 @app.route('/profile_settings/<int:user_id>', methods=['GET', 'POST'])
 def profile_settings(user_id):
+    if not session.get('logged_in', False):
+        return redirect('/signin')
+    if session.get('user_id') != user_id:
+        return "Forbidden", 403
     passwordForm = NewPassword()
     if passwordForm.validate_on_submit():
         print("Form validated")
