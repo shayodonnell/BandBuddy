@@ -1,5 +1,6 @@
 from app import db
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Association table for Post and Tag (Many-to-Many)
 post_tags = db.Table('post_tags',
@@ -25,7 +26,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(128), nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
     profile_picture = db.Column(db.String(100), nullable=True)
 
     # Relationships
@@ -34,6 +35,12 @@ class User(db.Model):
     tag_preferences = db.relationship('Tag', secondary=user_tag_preferences, back_populates='users')
     bands = db.relationship('Band', back_populates='owner', cascade='all, delete-orphan')
     posts = db.relationship('Post', back_populates='author', cascade='all, delete-orphan')
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)

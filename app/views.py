@@ -1,6 +1,7 @@
 from flask import render_template, flash, request, redirect, session, jsonify, get_flashed_messages
 from app import app, db, models
 import datetime, random
+from werkzeug.security import generate_password_hash, check_password_hash
 from .forms import SignupForm, SigninForm, EntryForm, PostForm, BandAdForm, NewPassword, TagPreferences, ProfilePictureForm
 
 profile_pictures = [
@@ -246,7 +247,9 @@ def signup():
             get_flashed_messages()
             flash('Passwords do not match.', 'error')
         else:
-            newUser = models.User(name=form.name.data, email=form.email.data, password=form.password.data, profile_picture=get_random_profile_picture())
+            newUser = models.User(name=form.name.data, email=form.email.data,
+                                  password_hash=generate_password_hash(form.password.data),
+                                  profile_picture=get_random_profile_picture())
             db.session.add(newUser)
             db.session.commit()
             session['user_id'] = newUser.id
@@ -261,7 +264,7 @@ def signin():
     form = SigninForm()
     if form.validate_on_submit():
         user = models.User.query.filter_by(email=form.email.data).first()
-        if user and user.password == form.password.data:
+        if user and check_password_hash(user.password_hash, form.password.data):
             session['user_id'] = user.id
             print(f"Username : {user.name}")
             session['user_name'] = user.name
@@ -283,7 +286,7 @@ def profile_settings(user_id):
             flash('Passwords do not match.', 'danger')
         else:
             user = models.User.query.get(user_id)
-            user.password = passwordForm.password.data
+            user.password_hash = generate_password_hash(passwordForm.password.data)
             db.session.commit()
             get_flashed_messages()
             flash('Password updated successfully!', 'success')
