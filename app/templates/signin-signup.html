@@ -37,6 +37,9 @@
                         <div class="mb-3">
                             {{ form.confirm_password.label(class="form-label") }}
                             {{ form.confirm_password(class="form-control") }}
+                            {% if form.confirm_password.errors %}
+                                <small class="text-danger">{{ form.confirm_password.errors[0] }}</small>
+                            {% endif %}
                         </div>
                         {{ form.submit(class="btn btn-primary standard-btn") }}
                         <div class="message">

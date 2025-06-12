@@ -12,7 +12,10 @@ class SignupForm(FlaskForm):
             Length(min=8, message='Password must be at least 8 characters long.')
         ]
         )
-    confirm_password = PasswordField('Confirm Password', validators=[DataRequired()])
+    confirm_password = PasswordField(
+        'Confirm Password',
+        validators=[DataRequired(), EqualTo('password', message='Passwords must match')]
+    )
     submit = SubmitField('Submit')
 
 class SigninForm(FlaskForm):
@@ -40,7 +43,10 @@ class BandAdForm(FlaskForm):
 
 class NewPassword(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm Password', validators=[DataRequired()])
+    confirm_password = PasswordField(
+        'Confirm Password',
+        validators=[DataRequired(), EqualTo('password', message='Passwords must match')]
+    )
     submit = SubmitField('Submit')
 
 class TagPreferences(FlaskForm):
