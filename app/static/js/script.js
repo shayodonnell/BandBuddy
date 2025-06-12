@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+    const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : '';
    
     document.querySelectorAll('.like').forEach(function(button) {
         button.addEventListener('click', function() {
@@ -11,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 type: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
                 },
                 success: (data) => {
                     if(data.error) {
@@ -45,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 type: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token() }}'
+                    'X-CSRFToken': csrfToken
                 },
                 success: (data) => {
                     if(data.success) {
