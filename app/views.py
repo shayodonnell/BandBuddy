@@ -104,11 +104,14 @@ def register_interest(ad_id):
         return jsonify({"error": "You must be logged in to register interest in a band ad."}), 403
     
     user_id = session['user_id']
-    new_interest = models.Interest(user_id=user_id, ad_id=ad_id, date=datetime.datetime.now())
-    db.session.add(new_interest)
-    db.session.commit()
-
-    return jsonify({"success": True})
+    existing = models.Interest.query.filter_by(user_id=user_id, ad_id=ad_id).first()
+    if existing is None:
+        new_interest = models.Interest(user_id=user_id, ad_id=ad_id, date=datetime.datetime.now())
+        db.session.add(new_interest)
+        db.session.commit()
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "error": "Already registered"})
 
 @app.route('/band_ad/<int:ad_id>/registered_interests', methods=['GET'])
 def registered_interests(ad_id):
