@@ -3,3 +3,7 @@ app.db
 __pycache__/
 *.py[cod]
 .DS_Store
+
+# Claude Code reference files
+CLAUDE.md
+.claude/
