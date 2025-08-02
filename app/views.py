@@ -116,15 +116,20 @@ def register_interest(ad_id):
 
 @app.route('/band_ad/<int:ad_id>/registered_interests', methods=['GET'])
 def registered_interests(ad_id):
+    band_ad = models.Bandad.query.get_or_404(ad_id)
+    if not session.get('logged_in', False) or session['user_id'] != band_ad.band.owner_id:
+        return "Forbidden", 403
+
     interests = models.Interest.query.filter_by(ad_id=ad_id).all()
     interest_items = [
         {
             "user": models.User.query.get(interest.user_id).name,
+            "email": models.User.query.get(interest.user_id).email,
             "date": interest.date.strftime("%d %b")
         }
         for interest in interests
     ]
-    feed_items = sorted(interest_items, key = lambda x: x['date'], reverse=True)
+    feed_items = sorted(interest_items, key=lambda x: x['date'], reverse=True)
     return render_template('interests.html', feed_items=feed_items, title="Interested users")
 
 @app.route('/newbandad', methods=['GET', 'POST'])
