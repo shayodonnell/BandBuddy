@@ -16,6 +16,15 @@ def get_random_profile_picture():
 
 @app.route('/', methods=['GET'])
 def feed():
+    # Remove expired band ads before assembling the feed
+    expired_ads = models.Bandad.query.filter(
+        models.Bandad.deadline < datetime.datetime.utcnow()
+    ).all()
+    for ad in expired_ads:
+        db.session.delete(ad)
+    if expired_ads:
+        db.session.commit()
+
     matching_tag_posts = []
     if session.get('logged_in', False):
         user_id = session['user_id']
